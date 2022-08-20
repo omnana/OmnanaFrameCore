@@ -1,0 +1,18 @@
+{
+    "name": "FrameCore.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1df9e3190adcc9a4382a42f7164cdef6"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

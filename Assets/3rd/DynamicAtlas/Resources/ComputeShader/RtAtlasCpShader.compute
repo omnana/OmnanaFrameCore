@@ -1,0 +1,45 @@
+﻿#pragma kernel CSMain
+
+RWTexture2D<float4> _rt;
+RWStructuredBuffer<uint> _colorData;
+
+uint startX;
+uint startY;
+uint width;
+bool setEmpty;
+
+[numthreads(8,8,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    uint color = _colorData[id.x + id.y * width];
+    float a = (float)((color & 0xFF000000) >> 24) * 0.00392156862;
+    float b = (float)((color & 0x00FF0000) >> 16) * 0.00392156862;
+    float g = (float)((color & 0x0000FF00) >> 8) * 0.00392156862;
+    float r = (float)((color & 0x000000FF) >> 0) * 0.00392156862; // 慢 
+    _rt[id.xy + uint2(startX, startY)] = float4(r, g, b, a * (setEmpty ? 0 : 1));
+}
+
+// void Test()
+// {
+//     // uint aaaa = 2152471295;
+//     // uint aaa = 0x804c1aff;
+//     Color a = new Color(0.5f, 0.3f, 0.1f, 1f);
+//     // var str = ColorUtility.ToHtmlStringRGBA(a);
+//     // uint x1 = Convert.ToUInt32(str, 16);
+//     var bytes = new byte[4];
+//     bytes[0] = (byte) (a.r * 255f);
+//     bytes[1] = (byte) (a.g * 255f);
+//     bytes[2] = (byte) (a.b * 255f);
+//     bytes[3] = (byte) (a.a * 255f);
+//     uint x2 = ByteTo(bytes);
+//     var test = x2;
+//     var t1 = ((test & 0xFF000000) >> 24) / 255f;
+//     var t2 = ((test & 0x00FF0000) >> 16) / 255f;
+//     var t3 = ((test & 0x0000FF00) >> 8) / 255f;
+//     var t4 = (test & 0x000000FF) / 255f;
+// }
+//
+// uint ByteTo(byte[] bytes)
+// {
+//     return Convert.ToUInt32($"{bytes[0]:X2}{bytes[1]:X2}{bytes[2]:X2}{bytes[3]:X2}", 16);
+// }

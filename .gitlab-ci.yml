@@ -1,0 +1,17 @@
+ build-job:
+  stage: build
+  script:
+    - $CI_TAG=$CI_COMMIT_TAG
+    - echo "tag:${CI_TAG}"
+   
+    # 执行打包动作
+    - echo "====Build Action Start===="
+    
+    - ./package_build.sh $CI_TAG
+    
+    - echo "=====Build Action Finish===="
+
+  tags:
+    - idealFrame
+  only:
+    - tags
