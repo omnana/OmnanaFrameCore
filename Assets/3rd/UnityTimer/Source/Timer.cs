@@ -106,10 +106,7 @@ namespace UnityTimer
         /// <param name="timer">The timer to cancel.</param>
         public static void Cancel(Timer timer)
         {
-            if (timer != null)
-            {
-                timer.Cancel();
-            }
+            timer?.Cancel();
         }
 
         /// <summary>
@@ -119,10 +116,7 @@ namespace UnityTimer
         /// <param name="timer">The timer to pause.</param>
         public static void Pause(Timer timer)
         {
-            if (timer != null)
-            {
-                timer.Pause();
-            }
+            timer?.Pause();
         }
 
         /// <summary>
@@ -132,34 +126,29 @@ namespace UnityTimer
         /// <param name="timer">The timer to resume.</param>
         public static void Resume(Timer timer)
         {
-            if (timer != null)
-            {
-                timer.Resume();
-            }
+            timer?.Resume();
         }
 
         public static void CancelAllRegisteredTimers()
         {
-            if (Timer._manager != null)
+            if (_manager != null)
             {
-                Timer._manager.CancelAllTimers();
+                _manager.CancelAllTimers();
             }
-
-            // if the manager doesn't exist, we don't have any registered timers yet, so don't
-            // need to do anything in this case
         }
 
+        // if the manager doesn't exist, we don't have any registered timers yet, so don't
+        // need to do anything in this case
         public static void PauseAllRegisteredTimers()
         {
             if (Timer._manager != null)
             {
                 Timer._manager.PauseAllTimers();
             }
-
-            // if the manager doesn't exist, we don't have any registered timers yet, so don't
-            // need to do anything in this case
         }
 
+        // if the manager doesn't exist, we don't have any registered timers yet, so don't
+        // need to do anything in this case
         public static void ResumeAllRegisteredTimers()
         {
             if (Timer._manager != null)
@@ -167,8 +156,6 @@ namespace UnityTimer
                 Timer._manager.ResumeAllTimers();
             }
 
-            // if the manager doesn't exist, we don't have any registered timers yet, so don't
-            // need to do anything in this case
         }
 
         #endregion

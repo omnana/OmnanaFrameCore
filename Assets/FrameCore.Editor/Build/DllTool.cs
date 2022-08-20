@@ -9,7 +9,7 @@ namespace FrameCore.Editor
 {
     public class DllTool
     {
-        [MenuItem("Tools/CompileDll/Win64")]
+        [MenuItem("Omnana/CompileDll/Win64")]
         public static void CompileDllWin64()
         {
             var target = BuildTarget.StandaloneWindows64;

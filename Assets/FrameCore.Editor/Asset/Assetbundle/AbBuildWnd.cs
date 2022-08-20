@@ -14,7 +14,7 @@ namespace FrameCore.Editor
         private SerializedProperty _rawResourceTarget;
         private string _abFolder;
 
-        [MenuItem("Tools/资源相关/打整包AB资源")]
+        [MenuItem("Omnana/资源相关/打整包AB资源")]
         private static void Open()
         {
             var wnd = GetWindow<AbBuildWnd>();

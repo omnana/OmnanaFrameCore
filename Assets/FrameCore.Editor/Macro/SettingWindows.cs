@@ -16,7 +16,7 @@ namespace FrameCore.Editor
         private string Macro = null;
  
         
-        [MenuItem("Tools/宏设置")]
+        [MenuItem("Omnana/宏设置")]
         public static void Settings()
         {
             SettingWindows sw=EditorWindow.GetWindow<SettingWindows>();//获取指定类型的窗口.

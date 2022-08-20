@@ -23,7 +23,7 @@ namespace FrameCore.Runtime
                 var obj = IocContainer.Resolve(fieldType);
                 if (obj == null)
                 {
-                    Debug.LogError($"type : {fieldType} 未注入！！");
+                    FrameDebugger.LogError($"type : {fieldType} 未注入！！");
                     continue;
                 }
 

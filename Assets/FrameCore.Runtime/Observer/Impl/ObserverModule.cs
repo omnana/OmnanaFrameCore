@@ -5,21 +5,22 @@ namespace FrameCore.Runtime
 {
     public class ObserverModule : IObserverModule
     {
-        private Dictionary<ValueType, Action<object[]>> stock;
+        private readonly Dictionary<ValueType, Action<object[]>> _stock;
         public ObserverModule()
         {
-            stock = new Dictionary<ValueType, Action<object[]>>();
+            _stock = new Dictionary<ValueType, Action<object[]>>();
         }
 
         public void Add<T>(T eventEnum, Action<object[]> callBack) where T : struct
         {
-            if (!stock.ContainsKey(eventEnum))
+            if (!_stock.ContainsKey(eventEnum))
             {
-                stock.Add(eventEnum, callBack);
+                _stock.Add(eventEnum, callBack);
                 return;
             }
 
-            foreach (Action<object[]> method in stock[eventEnum].GetInvocationList())
+            var list = _stock[eventEnum].GetInvocationList();
+            foreach (Action<object[]> method in list)
             {
                 if (method != callBack)
                     continue;
@@ -28,7 +29,7 @@ namespace FrameCore.Runtime
                 return;
             }
 
-            stock[eventEnum] += callBack;
+            _stock[eventEnum] += callBack;
         }
 
         public void Remove<T>(T eventEnum, Action<object[]> callBack) where T : struct
@@ -36,36 +37,36 @@ namespace FrameCore.Runtime
             if (callBack == null)
                 return;
 
-            if (!stock.ContainsKey(eventEnum))
+            if (!_stock.ContainsKey(eventEnum))
             {
-                FrameDebugger.LogWarning("Method doesn't exist：" + callBack.ToString());
+                FrameDebugger.LogWarning("Method doesn't exist：" + callBack);
                 return;
             }
 
-            if ((stock[eventEnum] -= callBack) != null)
+            if ((_stock[eventEnum] -= callBack) != null)
                 return;
 
-            stock.Remove(eventEnum);
+            _stock.Remove(eventEnum);
         }
 
         public void Dispatch<T>(T eventEnum, params object[] args) where T : struct
         {
-            if (!stock.ContainsKey(eventEnum))
+            if (!_stock.ContainsKey(eventEnum))
                 return;
 
-            if (stock[eventEnum] == null)
+            if (_stock[eventEnum] == null)
             {
-                stock.Remove(eventEnum);
+                _stock.Remove(eventEnum);
                 return;
             }
 
-            stock[eventEnum](args);
+            _stock[eventEnum](args);
         }
 
         [Obsolete("It is dangerous to do this")]
         public void Clear()
         {
-            stock.Clear();
+            _stock.Clear();
         }
     }
 }

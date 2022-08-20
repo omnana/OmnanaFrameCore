@@ -8,7 +8,7 @@ namespace FrameCore.Editor
 {
     public class AppBuilder
     {
-        [MenuItem("Tools/打包App/Win64")]
+        [MenuItem("Omnana/打包App/Win64")]
         public static void BuildWinPlayer()
         {
             AbTool.GenerateResourceConfig();

@@ -43,13 +43,13 @@ namespace FrameCore.Runtime
 
             if (target is ILateUpdater lateUpdater && !LateUpdateHs.Contains(lateUpdater.GetHashCode()))
             {
-                _extCoreUpdateDelegate += lateUpdater.LateUpdate;
+                _extCoreLateUpdateDelegate += lateUpdater.LateUpdate;
                 LateUpdateHs.Add(lateUpdater.GetHashCode());
             }
 
             if (target is IFixedUpdater fixedUpdater && !FixedUpdateHs.Contains(fixedUpdater.GetHashCode()))
             {
-                _extCoreUpdateDelegate += fixedUpdater.FixedUpdate;
+                _extCoreFixedUpdateDelegate += fixedUpdater.FixedUpdate;
                 FixedUpdateHs.Add(fixedUpdater.GetHashCode());
             }
         }

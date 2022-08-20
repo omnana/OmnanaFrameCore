@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using Debug = UnityEngine.Debug;
 
-public class FrameDebugger
+public static class FrameDebugger
 {
     public static readonly string logID = "------------------------------------FrameDebugger------------------------------------";
     public static void Log(object message, LogColorType color = LogColorType.Pink)
