@@ -8,7 +8,6 @@ namespace GameLogic
         
         protected override void OnInit()
         {
-            GetAllChildVO()
         }
     }
 }

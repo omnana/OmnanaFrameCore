@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace FrameCore.Util.Debugger
+namespace FrameCore.Runtime
 {
     public class DebugController : MonoBehaviour
     {
