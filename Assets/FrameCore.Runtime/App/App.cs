@@ -43,10 +43,9 @@ namespace FrameCore.Runtime
             _destroyAction?.Invoke();
         }
 
-
         #endregion
 
-        public void Init()
+        public void Load()
         {
             IocContainer.Resolve<IAssetModule>().Load();
             var dllName = GameConfigHelper.GetProduct();
@@ -61,6 +60,11 @@ namespace FrameCore.Runtime
             var bytes = asset.bytes;
 #endif
             Assembly assembly = Assembly.Load(bytes);
+            ExecuteAssembly(dllName, assembly);
+        }
+
+        private void ExecuteAssembly(string dllName, Assembly assembly)
+        {
             var entranceType = assembly.GetType($"{dllName}.GameEntry");
             if (entranceType == null)
             {
@@ -71,7 +75,7 @@ namespace FrameCore.Runtime
             var method = entranceType.GetMethod("GetInitDelegate");
             if (method == null)
             {
-                FrameDebugger.LogError($"请在{dllName}.GameLogic程序集内，创建静态函数 Init");
+                FrameDebugger.LogError($"请在{dllName}.GameLogic程序集内，创建静态函数 Init，以及委托 GetInitDelegate");
                 return;
             }
 
@@ -81,7 +85,7 @@ namespace FrameCore.Runtime
             method = entranceType.GetMethod("GetUpdateDelegate");
             if (method == null)
             {
-                FrameDebugger.LogError($"请在{dllName}.GameLogic程序集内，创建静态函数 Update");
+                FrameDebugger.LogError($"请在{dllName}.GameLogic程序集内，创建静态函数 Update，以及委托 GetUpdateDelegate");
                 return;
             }
 
@@ -90,7 +94,7 @@ namespace FrameCore.Runtime
             method = entranceType.GetMethod("GetLateUpdateDelegate");
             if (method == null)
             {
-                FrameDebugger.LogError($"请在{dllName}.GameLogic程序集内，创建静态函数 LateUpdate");
+                FrameDebugger.LogError($"请在{dllName}.GameLogic程序集内，创建静态函数 LateUpdate，以及委托 GetLateUpdateDelegate");
                 return;
             }
 
@@ -99,7 +103,7 @@ namespace FrameCore.Runtime
             method = entranceType.GetMethod("GetFixedUpdateDelegate");
             if (method == null)
             {
-                FrameDebugger.LogError($"请在{dllName}.GameLogic程序集内，创建静态函数 FixedUpdate");
+                FrameDebugger.LogError($"请在{dllName}.GameLogic程序集内，创建静态函数 FixedUpdate，以及委托 GetFixedUpdateDelegate");
                 return;
             }
 
@@ -108,7 +112,7 @@ namespace FrameCore.Runtime
             method = entranceType.GetMethod("GetDestroyDelegate");
             if (method == null)
             {
-                FrameDebugger.LogError($"请在{dllName}.GameLogic程序集内，创建静态函数 Destroy");
+                FrameDebugger.LogError($"请在{dllName}.GameLogic程序集内，创建静态函数 Destroy，以及委托 GetDestroyDelegate");
                 return;
             }
 

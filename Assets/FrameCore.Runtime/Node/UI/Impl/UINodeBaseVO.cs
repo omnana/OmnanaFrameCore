@@ -2,9 +2,11 @@ namespace FrameCore.Runtime
 {
     public abstract class UINodeBaseVO : BaseNodeVO
     {
-        public override void OpenNode(NodeKey key, params object[] args)
+        private IUIModule UIModule => IocContainer.Resolve<IUIModule>();
+
+        public override NodeObject OpenNode(NodeKey key, params object[] args)
         {
-            IocContainer.Resolve<IUIModule>().OpenNode((UINodeObject) NodeObj, key, args);
+            return UIModule.OpenNode((UINodeObject) NodeObj, key, args);
         }
 
         public override void Close(bool destroy = false)
@@ -13,14 +15,14 @@ namespace FrameCore.Runtime
             {
                 case NodeType.UIPanel:
                     if (!destroy)
-                        IocContainer.Resolve<IUIModule>().Close((UIPanelKey) NodeObj.Key);
+                        UIModule.Close((UIPanelKey) NodeObj.Key);
                     else
-                        IocContainer.Resolve<IUIModule>().Destroy((UIPanelKey) NodeObj.Key);
+                        UIModule.Destroy((UIPanelKey) NodeObj.Key);
 
                     break;
                 case NodeType.UINode:
                     if (!destroy)
-                        IocContainer.Resolve<IUIModule>().CloseNode((UINodeObject) NodeObj);
+                        CloseNode(NodeObj);
                     else
                         RemoveNode(NodeObj);
 
@@ -30,12 +32,12 @@ namespace FrameCore.Runtime
 
         public override void CloseNode(NodeObject child)
         {
-            IocContainer.Resolve<IUIModule>().CloseNode((UINodeObject) child);
+            UIModule.CloseNode((UINodeObject) child);
         }
 
         public override void RemoveNode(NodeObject child)
         {
-            IocContainer.Resolve<IUIModule>().RemoveNode((UINodeObject) child);
+            UIModule.RemoveNode((UINodeObject) child);
         }
     }
 }

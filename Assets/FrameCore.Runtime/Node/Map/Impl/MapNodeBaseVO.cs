@@ -3,9 +3,10 @@ namespace FrameCore.Runtime
     public abstract class MapNodeBaseVO : BaseNodeVO
     {
         private IMapModule MapModule => IocContainer.Resolve<IMapModule>();
-        public override void OpenNode(NodeKey key, params object[] args)
+
+        public override NodeObject OpenNode(NodeKey key, params object[] args)
         {
-            MapModule.OpenNode((MapNodeObject) NodeObj, key, args);
+            return MapModule.OpenNode((MapNodeObject) NodeObj, key, args);
         }
 
         public override void Close(bool destroy = false)

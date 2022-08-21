@@ -1,16 +1,7 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace FrameCore.Runtime
 {
-   public enum NodeType
-   {
-      MapStage,
-      MapNode,
-      UIPanel,
-      UINode,
-   }
-
    [RequireComponent(typeof(StaticNodeCollector))]
    public class NodeObject : MonoBehaviour, IGoGetter
    {
@@ -26,27 +17,29 @@ namespace FrameCore.Runtime
          set => m_NodeKey = value;
       }
 
-      public NodeKey Key => node.Key;
+      public NodeKey Key => _node.Key;
 
-      public BaseNode node { get; private set; }
-      public NodeObject Parent { get; private set; }
-      public List<NodeObject> Childes { get; private set; }
-
-      private HashSet<int> _childHashSet;
+      private BaseNode _node;
 
       private bool _isInit;
 
       public T GetGo<T>(string key) where T : Object => m_objectCollector[key] as T;
 
+      public T GetVO<T>() where T : BaseNodeVO
+      {
+         if (null == _node)
+            Load();
+
+         return _node.VO as T;
+      }
+
       public void SetActive(bool isActive) => gameObject.SetActive(isActive);
 
-      public void Load()
+      private void Load()
       {
          if (_isInit)
             return;
       
-         _childHashSet = new HashSet<int>();
-         Childes = new List<NodeObject>();
          if (string.IsNullOrEmpty(m_NodeKey))
          {
             FrameDebugger.LogError($" [NodeObject] {gameObject.name} nodeKey is null!!!");
@@ -61,20 +54,9 @@ namespace FrameCore.Runtime
             return;
          }
 
-         // 静态绑定的node
-         var staticNodes = gameObject.GetComponent<StaticNodeCollector>().NodeObjects;
-         foreach (var nodeObject in staticNodes)
-         {
-            nodeObject.Parent = this;
-            AddChild(nodeObject);
-         }
-
-         if (gameObject.transform.parent != null)
-            Parent = gameObject.transform.parent.GetComponent<NodeObject>();
-
          var nodeFactory = key.nodeBuilderDelegate();
-         node = nodeFactory.Build(key);
-         nodeFactory.NodeInit(node, this);
+         _node = nodeFactory.Build(key);
+         nodeFactory.NodeInit(_node, this);
          _isInit = true;
       }
 
@@ -86,74 +68,40 @@ namespace FrameCore.Runtime
          }
 
          Load();
-         node?.Refresh(args);
+         _node?.Refresh(args);
       }
-
-      public void AddChild(NodeObject nodeObject)
-      {
-         if (_childHashSet.Contains(nodeObject.Id))
-         {
-            FrameDebugger.LogError($"AddChild node:{nodeObject.name} is already exist !!!");
-            return;
-         }
-
-         Childes.Add(nodeObject);
-         _childHashSet.Add(nodeObject.Id);
-      }
-
-      public void RemoveChild(NodeObject nodeObject)
-      {
-         if (!_childHashSet.Contains(nodeObject.Id))
-         {
-            FrameDebugger.LogError($"RemoveChild node :{nodeObject.name} is no exist !!!");
-            return;
-         }
-
-         Childes.Remove(nodeObject);
-         _childHashSet.Remove(nodeObject.Id);
-      }
-
-      // #region Controller
-      //
-      // public T GetController<T>() where T : IController => node.GetController<T>();
-      // public T GetController<T>(Func<T, bool> func) where T : IController => node.GetController(func);
-      // public List<IController> GetAllController() => node.GetAllController();
-      // public List<T> GetControllers<T>(Func<T, bool> func) where T : IController => node.GetControllers(func);
-      //
-      // #endregion
 
       #region 生命周期
 
       private void Awake()
       {
          Load();
-         node?.Init();
+         _node?.Init();
       }
 
       private void OnEnable()
       {
-         node?.Show();
+         _node?.Show();
       }
 
       private void Update()
       {
-         node?.Update();
+         _node?.Update();
       }
 
       private void LateUpdate()
       {
-         node?.LateUpdate();
+         _node?.LateUpdate();
       }
 
       private void OnDisable()
       {
-         node?.Hide();
+         _node?.Hide();
       }
 
       private void OnDestroy()
       {
-         node?.Stop();
-         Parent = null;
+         _node?.Stop();
       }
 
       #endregion

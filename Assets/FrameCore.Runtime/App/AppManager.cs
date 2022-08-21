@@ -11,7 +11,7 @@ namespace FrameCore.Runtime
         public void Start()
         {
             _app = Framework.Start();
-            _app.Init();
+            _app.Load();
         }
 
         public void Restart()

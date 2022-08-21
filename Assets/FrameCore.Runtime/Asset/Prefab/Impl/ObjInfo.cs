@@ -9,18 +9,18 @@ namespace FrameCore.Runtime
 
         public void Init()
         {
-            if (string.IsNullOrEmpty(AssetName))
-                return;
-
-            // 非空，说明通过克隆实例化，添加引用计数
-            InstanceId = gameObject.GetInstanceID();
-            IocContainer.Resolve<IPrefabModule>().AddAssetRef(AssetName, gameObject);
+            // if (string.IsNullOrEmpty(AssetName))
+            //     return;
+            // 这种方式不允许，所有的预制体只能通过PrefabModule
+            // // 非空，说明通过克隆实例化，添加引用计数
+            // InstanceId = gameObject.GetInstanceID();
+            // IocContainer.Resolve<IPrefabModule>().AddAssetRef(AssetName, gameObject);
         }
 
-        private void OnDestroy()
-        {
-            // 被动销毁，保证引用计数正确
-            IocContainer.Resolve<IPrefabModule>().Destroy(gameObject);
-        }
+        // private void OnDestroy()
+        // {
+        //     // 被动销毁，保证引用计数正确
+        //     // IocContainer.Resolve<IPrefabModule>().Destroy(gameObject);
+        // }
     }
 }

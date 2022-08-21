@@ -44,7 +44,7 @@ public class RefTypes : MonoBehaviour
         };
     }
 
-    // Init is called before the first frame update
+    // Load is called before the first frame update
     void Start()
     {
         Debug.Log(GetTypes());

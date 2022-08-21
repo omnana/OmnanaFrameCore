@@ -5,8 +5,9 @@ namespace FrameCore.Runtime
 {
     public class UIModule : IUIModule
     {
-        private Dictionary<UIPanelKey, UINodeObject> _panelDic;
-        private Dictionary<UIPanelLayer, int> _layerSortIndexDic;
+        private IPrefabModule PrefabModule => IocContainer.Resolve<IPrefabModule>();
+        private readonly Dictionary<UIPanelKey, UINodeObject> _panelDic;
+        private readonly Dictionary<UIPanelLayer, int> _layerSortIndexDic;
 
         public UIModule()
         {
@@ -24,7 +25,7 @@ namespace FrameCore.Runtime
                     return;
                 }
 
-                var go = IocContainer.Resolve<IPrefabModule>().LoadSync($"UI/{key}.prefab");
+                var go = PrefabModule.LoadSync($"UI/{key}.prefab");
                 if (go != null)
                 {
                     var ui = go.GetComponent<UINodeObject>();
@@ -56,21 +57,17 @@ namespace FrameCore.Runtime
 
             var ui = _panelDic[key];
             ui.SetActive(false);
-            IocContainer.Resolve<IPrefabModule>().Destroy(ui.gameObject);
+            PrefabModule.Destroy(ui.gameObject);
         }
 
-        public int OpenNode(UINodeObject parent, NodeKey key, params object[] args)
+        public UINodeObject OpenNode(UINodeObject parent, NodeKey key, params object[] args)
         {
             var parentTrans = parent != null ? parent.transform : null;
-            var go = IocContainer.Resolve<IPrefabModule>().LoadSync($"Map/{key}.prefab", parentTrans);
-            if (go == null)
-                return 0;
-            
+            var go = PrefabModule.LoadSync($"UI/{key}.prefab", parentTrans);
             go.transform.SetAsLastSibling();
             var nodeObj = go.GetComponent<UINodeObject>();
-            parent.AddChild(nodeObj);
             nodeObj.Open(args);
-            return nodeObj.Id;
+            return nodeObj;
         }
 
         public void CloseNode(UINodeObject node)
@@ -86,13 +83,8 @@ namespace FrameCore.Runtime
 
         public void RemoveNode(UINodeObject node)
         {
-            if (node.Parent != null)
-            {
-                node.Parent.RemoveChild(node);
-            }
-
             node.SetActive(false);
-            IocContainer.Resolve<IPrefabModule>().Destroy(node.gameObject);
+            PrefabModule.Destroy(node.gameObject);
         }
 
         private int GetCurrentLayerSort(UIPanelLayer layer)

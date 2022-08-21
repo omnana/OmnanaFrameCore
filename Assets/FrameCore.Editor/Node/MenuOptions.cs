@@ -7,8 +7,9 @@ namespace FrameCore.Editor
 {
     internal static partial class MenuOptions
     {
-        private const string UIPath = "GameObject/自定义UINode/";
-        private const string MapPath = "GameObject/自定义MapNode/";
+        private const string UIPath = "GameObject/Omnana/UI/";
+        private const string MapPath = "GameObject/Omnana/Map/";
+        private const string EntityPath = "GameObject/Omnana/Entity/";
 
          private static void PlaceUIElementRoot(GameObject element, MenuCommand menuCommand)
         {
@@ -59,27 +60,33 @@ namespace FrameCore.Editor
         }
 
         [MenuItem(UIPath + "UIPanel", false, 2)]
-        static public void AddPanel(MenuCommand menuCommand)
+        public static void AddPanel(MenuCommand menuCommand)
         {
             AddUI(menuCommand, "UI/Prefabs/UIPanel.prefab");
         }
 
         [MenuItem(UIPath + "UINode", false, 2)]
-        static public void AddUIItem(MenuCommand menuCommand)
+        public static void AddUIItem(MenuCommand menuCommand)
         {
             AddUI(menuCommand, "UI/Prefabs/UINode.prefab");
         }
 
         [MenuItem(MapPath + "MapStage", false, 2)]
-        static public void AddMapStage(MenuCommand menuCommand)
+        public static void AddMapStage(MenuCommand menuCommand)
         {
             AddUI(menuCommand, "Map/Prefabs/MapStage.prefab");
         }
 
         [MenuItem(MapPath + "MapNode", false, 2)]
-        static public void AddMapNode(MenuCommand menuCommand)
+        public static void AddMapNode(MenuCommand menuCommand)
         {
             AddUI(menuCommand, "Map/Prefabs/MapNode.prefab");
+        }
+
+        [MenuItem(EntityPath + "EntityNode", false, 2)]
+        public static void AddEntityNode(MenuCommand menuCommand)
+        {
+            AddUI(menuCommand, "Entity/Prefabs/EntityNode.prefab");
         }
         
         static void AddUI(MenuCommand menuCommand, string filePath)

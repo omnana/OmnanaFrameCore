@@ -8,7 +8,7 @@ namespace FrameCore.Runtime
         void RunStage(MapStageKey key);
         void CloseStage(MapStageKey key);
         void DestroyStage(MapStageKey key);
-        int OpenNode(MapNodeObject parent, NodeKey mapNodeKey, params object[] args);
+        NodeObject OpenNode(MapNodeObject parent, NodeKey mapNodeKey, params object[] args);
         void CloseNode(MapNodeObject node);
         void RemoveNode(MapNodeObject node);
     }

@@ -5,7 +5,7 @@ namespace FrameCore.Runtime
         void Open(UIPanelKey key);
         void Close(UIPanelKey key);
         void Destroy(UIPanelKey key);
-        int OpenNode(UINodeObject parent, NodeKey key, params object[] args);
+        UINodeObject OpenNode(UINodeObject parent, NodeKey key, params object[] args);
         void CloseNode(UINodeObject node);
         void RemoveNode(UINodeObject child);
     }

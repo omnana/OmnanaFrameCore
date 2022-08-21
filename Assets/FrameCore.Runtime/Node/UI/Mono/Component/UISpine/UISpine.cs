@@ -117,10 +117,10 @@
 //
 //         protected void Awake()
 //         {
-//             Init();
+//             Load();
 //         }
 //
-//         private void Init()
+//         private void Load()
 //         {
 //             _skeletonGraphic = GetComponent<SkeletonGraphic>();
 //             if (!_skeletonGraphic.SkeletonDataAsset)

@@ -12,6 +12,7 @@ namespace GameLogic
         // add static node's key
         protected override void InitStaticNodeKey(BaseNode node)
         {
+            node.InitStaticNodeKey(UINodeKeys.UIGameStartSubNode);
         }
 
         // add static node's controllers

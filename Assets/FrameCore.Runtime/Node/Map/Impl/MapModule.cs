@@ -5,9 +5,10 @@ namespace FrameCore.Runtime
 {
     public class MapModule : IMapModule
     {
+        private IPrefabModule PrefabModule => IocContainer.Resolve<IPrefabModule>();
         private readonly Dictionary<MapStageKey, MapNodeObject> _mapStageDic;
 
-        // private MapStageKey _runStage;
+        private MapStageKey _runStage;
         private MapTree _mapTree;
 
         public MapModule()
@@ -32,16 +33,16 @@ namespace FrameCore.Runtime
                 return;
             }
 
-            // if (_runStage != null)
-            // {
-            //     var current = _mapStageDic[_runStage];
-            //     current.VO.SetActive(false);
-            //     IocContainer.Resolve<IPrefabModule>().Destroy(current.VO.NodeObject.gameObject);
-            // }
+            if (_runStage != null)
+            {
+                var current = _mapStageDic[_runStage];
+                current.SetActive(false);
+                PrefabModule.Destroy(current.gameObject);
+            }
 
             if (!_mapStageDic.ContainsKey(key))
             {
-                var go = IocContainer.Resolve<IPrefabModule>().LoadSync($"Map/{key}.prefab", _mapTree.Stage);
+                var go = PrefabModule.LoadSync($"Map/{key}.prefab", _mapTree.Stage);
                 if (go != null)
                 {
                     go.transform.SetAsLastSibling();
@@ -53,7 +54,7 @@ namespace FrameCore.Runtime
 
             _mapTree.CurrentCam = _mapStageDic[key].GetComponent<MapStage>().Camera;
             _mapStageDic[key].Open();
-            // _runStage = key;
+            _runStage = key;
         }
 
         public void CloseStage(MapStageKey key)
@@ -78,22 +79,18 @@ namespace FrameCore.Runtime
 
             var stage = _mapStageDic[key];
             stage.SetActive(false);
-            IocContainer.Resolve<IPrefabModule>().Destroy(stage.gameObject);
+            PrefabModule.Destroy(stage.gameObject);
             _mapStageDic.Remove(key);
         }
 
-        public int OpenNode(MapNodeObject parent, NodeKey nodeKey, params object[] args)
+        public NodeObject OpenNode(MapNodeObject parent, NodeKey nodeKey, params object[] args)
         {
             var parentTrans = parent == null ? _mapTree.Stage : parent.transform;
-            var go = IocContainer.Resolve<IPrefabModule>().LoadSync($"Map/{nodeKey}.prefab", parentTrans);
-            if (go == null)
-                return 0;
-
+            var go = PrefabModule.LoadSync($"Map/{nodeKey}.prefab", parentTrans);
             go.transform.SetAsLastSibling();
             var nodeObj = go.GetComponent<MapNodeObject>();
-            parent.AddChild(nodeObj);
             nodeObj.Open(args);
-            return nodeObj.Id;
+            return nodeObj;
         }
 
         public void CloseNode(MapNodeObject node)
@@ -103,12 +100,7 @@ namespace FrameCore.Runtime
 
         public void RemoveNode(MapNodeObject node)
         {
-            node.gameObject.SetActive(false);
-            if (node.Parent != null)
-            {
-                node.Parent.RemoveChild(node);
-            }
-
+            node.SetActive(false);
             IocContainer.Resolve<IPrefabModule>().Destroy(node.gameObject);
         }
     }
