@@ -61,10 +61,10 @@ namespace FrameCore.Runtime
             var bytes = asset.bytes;
 #endif
             Assembly assembly = Assembly.Load(bytes);
-            var entranceType = assembly.GetType($"{dllName}.Entrance");
+            var entranceType = assembly.GetType($"{dllName}.GameEntry");
             if (entranceType == null)
             {
-                FrameDebugger.LogError($"请在{dllName}程序集内创建 Entrance 入口类！！");
+                FrameDebugger.LogError($"请在{dllName}程序集内创建 GameEntry 入口类！！");
                 return;
             }
 

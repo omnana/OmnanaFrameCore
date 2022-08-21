@@ -3,7 +3,7 @@ using System;
 namespace GameLogic
 {
     /// 提交给FrameCore的Delegate
-    public partial class Entrance
+    public partial class GameEntry
     {
         public static Action GetInitDelegate() => Init;
         public static Action<float> GetUpdateDelegate() => Update;

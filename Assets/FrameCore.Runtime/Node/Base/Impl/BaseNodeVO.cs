@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace FrameCore.Runtime
 {
-    // public abstract class BaseNodeVO : IParentVOGetter, IChildVOGetter, IControllerGetter
     public abstract class BaseNodeVO : IParentVOGetter, IChildVOGetter
     {
         public int Id => NodeObj.Id;
@@ -92,9 +91,8 @@ namespace FrameCore.Runtime
 
         #region Node相关
 
-        public virtual int OpenNode(NodeKey key, params object[] args)
+        public virtual void OpenNode(NodeKey key, params object[] args)
         {
-            return 0;
         }
 
         public virtual void Close(bool destroy = false)

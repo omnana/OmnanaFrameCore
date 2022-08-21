@@ -26,33 +26,33 @@ namespace FrameCore.Editor
             titleContent = new GUIContent("打包ab");
             autoRepaintOnSceneChange = true;
             Show();
-            _abFolder = GameConfigHelper.GetProduct();
+            _abFolder = "RawResources";
         }
 
         private void OnGUI()
         {
             _versionCode = EditorGUILayout.TextField("打包资源版本号：", _versionCode);
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField("打包的游戏主文件夹:", GUILayout.Width(130));
-                EditorGUILayout.LabelField(_abFolder);
-                GUILayout.Space(10);
-            }
-            EditorGUILayout.EndHorizontal();
+            // EditorGUILayout.BeginHorizontal();
+            // {
+            //     EditorGUILayout.LabelField("打包的游戏主文件夹:", GUILayout.Width(130));
+            //     EditorGUILayout.LabelField(_abFolder);
+            //     GUILayout.Space(10);
+            // }
+            // EditorGUILayout.EndHorizontal();
 
             var dir = $"{Application.dataPath}/{_abFolder}";
             if (!DirectoryUtil.Exist(dir))
             {
                 GUILayout.Space(20);
-                EditorGUILayout.HelpBox($"注意：该{_abFolder}文件夹不存在!!", MessageType.Warning);
+                EditorGUILayout.HelpBox("注意：该 RawResources 文件夹不存在!!", MessageType.Warning);
                 return;
             }
 
-            var resFolder = AssetBundleHelper.GetRawResourcesPrefix(_abFolder);
-            var resDir = $"{Application.dataPath}/{resFolder}";
+            // var resFolder = AssetBundleHelper.GetRawResourcesPrefix(_abFolder);
+            var resDir = $"{Application.dataPath}/{_abFolder}";
             if (!DirectoryUtil.Exist(resDir))
             {
-                EditorGUILayout.HelpBox("注意：需要将程序集所使用的的资源文件夹放在与程序集同目录下，资源文件夹名称同一为RawResources", MessageType.Warning);
+                EditorGUILayout.HelpBox("注意：请在Assets文件目录下创建资产文件夹 RawResources ！！！", MessageType.Warning);
                 return;
             }
 
@@ -65,10 +65,10 @@ namespace FrameCore.Editor
                 // DllTool.CopyDll2Resource(GameConfigEditorHelper.ProductName, dir + "/RawResources/Dll");
                 
                 // 现在只是window平台，所以直接拷贝
-                DllTool.CopyScriptAssembliesDll2Resource(GameConfigHelper.GetProduct(), dir + "/RawResources/Dll");
+                DllTool.CopyScriptAssembliesDll2Resource(GameConfigHelper.GetProduct(), dir + "/Dll");
 
                 // 打包资源
-                AbTool.BuildCustomAllAssetBundles(_abFolder);
+                AbTool.BuildCustomAllAssetBundles();
             }
         }
     }

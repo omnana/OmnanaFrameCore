@@ -20,7 +20,6 @@ namespace FrameCore.Editor
 
         // 每个文件夹都会单独成包
         private static readonly HashSet<string> IndependentFolder = new HashSet<string>();
-        public static readonly HashSet<string> SpecialFolder = new HashSet<string>();
 
         // 资源对应主文件夹名
         private static readonly Dictionary<string, string> AssetAbDic = new Dictionary<string, string>();
@@ -44,11 +43,11 @@ namespace FrameCore.Editor
         /// <returns></returns>
         public AssetBundleBuild[] Analyze(AssetConfig config)
         {
-            _buildFolderPrefix = $"Assets/{config.name}/RawResources/";
-            _buildFolder = AssetBundleHelper.GetBuildFolder(config.name);
+            _buildFolderPrefix = AssetBundleHelper.GetAbFolderPrefix();
+            _buildFolder = AssetBundleHelper.GetDestFolder();
             if (!Directory.Exists(_buildFolder))
             {
-                FrameDebugger.LogError($"请在{config.name}文件夹下，创建 RawResources 资源文件集！！");
+                FrameDebugger.LogError($"请在Assets文件夹下，创建 RawResources 资源文件集！！");
                 return null;
             }
 
@@ -59,11 +58,7 @@ namespace FrameCore.Editor
                 {
                     IndependentFolder.Add(folder.name);
                 }
-
-                foreach (var folder in config.StreamingAssetFolder)
-                {
-                    SpecialFolder.Add(folder.name);
-                }
+           
             }
 
             // _abFileMd5OldDic = GetAbFileDic();
@@ -84,7 +79,7 @@ namespace FrameCore.Editor
             foreach (var root in dirs)
             {
                 var folderName = Path.GetFileName(root);
-                if (IndependentFolder.Contains(folderName) && !SpecialFolder.Contains(folderName))
+                if (IndependentFolder.Contains(folderName))
                 {
                     var dirFileDic = new Dictionary<string, List<string>>();
                     DirectoryUtil.TraverseFileOnFolder(root, info =>
@@ -167,7 +162,7 @@ namespace FrameCore.Editor
             var dirs = Directory.GetDirectories(_buildFolder);
             var targetFiles = (from d in dirs
                 let dirName = Path.GetFileNameWithoutExtension(d)
-                where !IndependentFolder.Contains(dirName) && !SpecialFolder.Contains(dirName)
+                where !IndependentFolder.Contains(dirName)
                 from file in Directory.GetFiles(d, "*.*", SearchOption.AllDirectories)
                 let abFile = GetAbNameFromFile(file)
                 where !file.EndsWith(".meta") && !file.EndsWith(".unity") && !_folderRes.Contains(abFile) &&
@@ -214,29 +209,6 @@ namespace FrameCore.Editor
                 assetNames = new[] {GetAssetName(filePath)}
             };
         }
-
-        // // 保存资源关系配置
-        // private void SaveAbAssetHashConfig()
-        // {
-        //     var filePath = $"{Environment.CurrentDirectory}\\abAssetHashConfig.bytes";
-        //     var assetConfig = LitJson.JsonMapper.ToJson(_abFileMd5NewDic);
-        //     var bytes = System.Text.Encoding.UTF8.GetBytes(assetConfig);
-        //     FileUtility.WriteFile(filePath, bytes);
-        // }
-
-        // // 获取ab跟资源的关系表
-        // private Dictionary<string, List<string>> GetAbFileDic()
-        // {
-        //     var filePath = $"{Environment.CurrentDirectory}\\abAssetHashConfig.bytes";
-        //     if (FileUtility.Exists(filePath))
-        //     {
-        //         var bytes = FileUtility.ReadFileToByte(filePath);
-        //         var str = System.Text.Encoding.UTF8.GetString(bytes);
-        //         return LitJson.JsonMapper.ToObject<Dictionary<string, List<string>>>(str);
-        //     }
-        //
-        //     return null;
-        // }
 
         // 建立依赖节点，生成一张有向无环图
         private void AnalyzeComplex(IEnumerable<string> files)
@@ -451,7 +423,6 @@ namespace FrameCore.Editor
         {
             IndependentFolder.Clear();
             AssetAbDic.Clear();
-            SpecialFolder.Clear();
 
             _folderRes.Clear();
             _abNodeDic.Clear();
@@ -533,42 +504,6 @@ namespace FrameCore.Editor
 
             return hash;
         }
-
-        // private void AddAbAssetMd5(string abName, string filePath)
-        // {
-        //     if (!_abFileMd5NewDic.ContainsKey(abName))
-        //     {
-        //         _abFileMd5NewDic.Add(abName, new List<string>());
-        //     }
-        //
-        //     _abFileMd5NewDic[abName].Add(Md5Helper.GetMd5HashFromFile(filePath, DownloadDefine.DownloadLen));
-        // }
-
-        // private bool IsAbChange(string abName)
-        // {
-        //     if (_abFileMd5OldDic == null || !_abFileMd5OldDic.ContainsKey(abName) || !_abFileMd5NewDic.ContainsKey(abName))
-        //         return true;
-        //
-        //     var existHs = new HashSet<string>();
-        //     var olds = _abFileMd5OldDic[abName];
-        //     foreach (var file in olds)
-        //     {
-        //         existHs.Add(file);
-        //     }
-        //
-        //     var news = _abFileMd5NewDic[abName];
-        //     foreach (var file in news)
-        //     {
-        //         if (!existHs.Contains(file))
-        //         {
-        //             _abFileMd5OldDic.Remove(abName);
-        //             return true;
-        //         }
-        //     }
-        //
-        //     _abFileMd5OldDic.Remove(abName);
-        //     return false;
-        // }
 
         #endregion
     }

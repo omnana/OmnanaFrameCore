@@ -2,9 +2,9 @@ namespace FrameCore.Runtime
 {
     public abstract class UINodeBaseVO : BaseNodeVO
     {
-        public override int OpenNode(NodeKey key, params object[] args)
+        public override void OpenNode(NodeKey key, params object[] args)
         {
-            return IocContainer.Resolve<IUIModule>().OpenNode((UINodeObject) NodeObj, key, args);
+            IocContainer.Resolve<IUIModule>().OpenNode((UINodeObject) NodeObj, key, args);
         }
 
         public override void Close(bool destroy = false)

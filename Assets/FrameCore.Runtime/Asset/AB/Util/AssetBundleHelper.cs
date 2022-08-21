@@ -7,34 +7,37 @@ namespace FrameCore.Runtime
     {
         public const int Max_Loading_Count = 10;
         public const string StreamAsset = "StreamingAssets";
+        public const string MainResFolderName = "RawResources";
 
         /// <summary>
         /// ab总manifest名称
         /// </summary>
         public static string GetManifestPath()
         {
-           return $"{GetStreamAssetPath()}/RawResources/RawResources";
-        }
-
-        /// <summary>
-        /// 包前缀
-        /// </summary>
-        /// <param name="folder"></param>
-        /// <returns></returns>
-        public static string GetRawResourcesPrefix(string folder)
-        {
-            return $"{folder}/RawResources";
+           return $"{GetStreamAssetPath()}/StreamingAssets";
         }
 
         public static string GetAbPath(string abName)
         {
-            return $"{GetStreamAssetPath()}/RawResources/{abName.ToLower()}";
+            return $"{GetStreamAssetPath()}/{abName.ToLower()}";
         }
 
-        // 打包路径
-        public static string GetBuildFolder(string folder)
+        // 编辑器打包资源输出文件夹
+        public static string GetOutputFolderEditor()
         {
-            return $"{Application.dataPath}/{folder}/RawResources";
+            return $"{DirectoryUtil.GetProjectDirectory(StreamAsset)}";
+        }
+        
+        // 获取资源文件的统一前缀
+        public static string GetAbFolderPrefix()
+        {
+            return $"Assets/{MainResFolderName}/";
+        }
+
+        // 打包的资源路径
+        public static string GetDestFolder()
+        {
+            return $"{Application.dataPath}/RawResources";
         }
 
         private static string GetStreamAssetPath()

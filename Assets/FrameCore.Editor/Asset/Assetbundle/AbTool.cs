@@ -12,9 +12,9 @@ namespace FrameCore.Editor
         private static readonly AbBuilder AbBuilder = new AbBuilder();
         
         // 进行自定义游戏打包，仅针对win平台a
-        public static void BuildCustomAllAssetBundles(string productName)
+        public static void BuildCustomAllAssetBundles()
         {
-            var streamAssetFolder = DirectoryUtil.GetProjectDirectory(AssetBundleHelper.StreamAsset);
+            string productName = GameConfigHelper.GetProduct();
             var config = IdealResource.Load<AssetConfig>($"Config\\AssetConfig\\{productName}.asset");
             if (config == null)
             {
@@ -22,12 +22,11 @@ namespace FrameCore.Editor
                                  $"右键Config/AssetConfig文件夹（没有这个文件夹，就创建一个），[create/资源管理/AssetConfig]，请将文件命名为 {productName} ");
                 return;
             }
-            
-            DirectoryUtil.DeleteDirectory(streamAssetFolder);
- 
-            var builderFolder = $"{streamAssetFolder}/{productName}/RawResources";
-            DirectoryUtil.CreateDirectory(builderFolder);
-            // if (!DirectoryUtil.Exist(builderFolder))
+
+            var outputFolder = AssetBundleHelper.GetOutputFolderEditor();
+            DirectoryUtil.DeleteDirectory(outputFolder);
+            DirectoryUtil.CreateDirectory(outputFolder);
+            // if (!DirectoryUtil.Exist(outputFolder))
             // {
             //     DirectoryUtil.CreateDirectory(builderFolder);
             // }
@@ -49,19 +48,13 @@ namespace FrameCore.Editor
                 //     }
                 // }
 
-                BuildPipeline.BuildAssetBundles(builderFolder, builds, BuildAssetBundleOptions.ChunkBasedCompression,
-                    BuildTarget.StandaloneWindows64);
+                BuildPipeline.BuildAssetBundles(outputFolder, builds, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.StandaloneWindows64);
 
                 // // 删除空文件夹
                 // DirectoryUtil.KillEmptyDirectory(streamAssetFolder);
 
-                foreach (var folder in AbBuilder.SpecialFolder)
-                {
-                    DirectoryUtil.CopyDirectory($"{Application.dataPath}/{productName}/RawResources/{folder}",
-                        $"{builderFolder}/{folder}", ".meta");
-                }
-
-                Debug.Log($"[{productName}] 完成ab打包");
+                Debug.Log($"[{productName}] 完成ab打包。输出路径：{outputFolder}");
+                System.Diagnostics.Process.Start(outputFolder);
             }
             catch (Exception e)
             {

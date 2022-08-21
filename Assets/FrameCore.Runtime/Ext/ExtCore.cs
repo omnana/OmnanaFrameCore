@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,9 +9,9 @@ namespace FrameCore.Runtime
     public static class ExtCore
     {
         private static MonoBehaviour _mono;
-        private static readonly HashSet<int> UpdateHs = new HashSet<int>();
-        private static readonly HashSet<int> LateUpdateHs = new HashSet<int>();
-        private static readonly HashSet<int> FixedUpdateHs = new HashSet<int>();
+        private static readonly HashSet<Type> UpdateHs = new HashSet<Type>();
+        private static readonly HashSet<Type> LateUpdateHs = new HashSet<Type>();
+        private static readonly HashSet<Type> FixedUpdateHs = new HashSet<Type>();
         private static OnExtCoreUpdateDelegate _extCoreUpdateDelegate;
         private static OnExtCoreUpdateDelegate _extCoreLateUpdateDelegate;
         private static OnExtCoreUpdateDelegate _extCoreFixedUpdateDelegate;
@@ -23,34 +24,48 @@ namespace FrameCore.Runtime
                 CheckUpdater(container);
                 CheckMono(container);
             };
-
-            // var types = IocContainer.GetTypeList();
-            // foreach (var type in types)
-            // {
-            //     CheckUpdater(IocContainer.Resolve(type));
-            //     CheckMono(IocContainer.Resolve(type));
-            // }
+            IocContainer.ContainerRemoveHandle = RemoveUpdater;
         }
 
-        // 如果需要对外开放，再改成public
-        internal static void CheckUpdater(object target)
+        private static void CheckUpdater(object target)
         {
-            if (target is IUpdater updater && !UpdateHs.Contains(updater.GetHashCode()))
+            if (target is IUpdater updater && !UpdateHs.Contains(updater.GetType()))
             {
                 _extCoreUpdateDelegate += updater.Update;
-                UpdateHs.Add(updater.GetHashCode());
+                UpdateHs.Add(updater.GetType());
             }
 
-            if (target is ILateUpdater lateUpdater && !LateUpdateHs.Contains(lateUpdater.GetHashCode()))
+            if (target is ILateUpdater lateUpdater && !LateUpdateHs.Contains(lateUpdater.GetType()))
             {
                 _extCoreLateUpdateDelegate += lateUpdater.LateUpdate;
-                LateUpdateHs.Add(lateUpdater.GetHashCode());
+                LateUpdateHs.Add(lateUpdater.GetType());
             }
 
-            if (target is IFixedUpdater fixedUpdater && !FixedUpdateHs.Contains(fixedUpdater.GetHashCode()))
+            if (target is IFixedUpdater fixedUpdater && !FixedUpdateHs.Contains(fixedUpdater.GetType()))
             {
                 _extCoreFixedUpdateDelegate += fixedUpdater.FixedUpdate;
-                FixedUpdateHs.Add(fixedUpdater.GetHashCode());
+                FixedUpdateHs.Add(fixedUpdater.GetType());
+            }
+        }
+        
+        private static void RemoveUpdater(object target)
+        {
+            if (target is IUpdater updater && UpdateHs.Contains(updater.GetType()))
+            {
+                _extCoreUpdateDelegate -= updater.Update;
+                UpdateHs.Add(updater.GetType());
+            }
+
+            if (target is ILateUpdater lateUpdater && LateUpdateHs.Contains(lateUpdater.GetType()))
+            {
+                _extCoreLateUpdateDelegate -= lateUpdater.LateUpdate;
+                LateUpdateHs.Add(lateUpdater.GetType());
+            }
+
+            if (target is IFixedUpdater fixedUpdater && FixedUpdateHs.Contains(fixedUpdater.GetType()))
+            {
+                _extCoreFixedUpdateDelegate -= fixedUpdater.FixedUpdate;
+                FixedUpdateHs.Add(fixedUpdater.GetType());
             }
         }
 

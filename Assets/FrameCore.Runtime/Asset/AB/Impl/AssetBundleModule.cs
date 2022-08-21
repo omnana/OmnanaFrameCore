@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FrameCore.Utility;
 using UnityEngine;
 
 namespace FrameCore.Runtime
@@ -9,13 +8,13 @@ namespace FrameCore.Runtime
     /// </summary>
     public class AssetBundleModule : IAssetBundleModule, IUpdater
     {
-        private readonly List<AssetBundleObject> _tempList;
         private readonly Dictionary<string, AssetBundleObject> _readyDic;
         private readonly Dictionary<string, AssetBundleObject> _loadingDic;
         private readonly Dictionary<string, AssetBundleObject> _loadedDic;
         private readonly Dictionary<string, AssetBundleObject> _unloadDic;
+        private readonly List<AssetBundleObject> _tempList;
         private Dictionary<string, string[]> _dependsDic;
-            
+
         public AssetBundleModule()
         {
             _readyDic = new Dictionary<string, AssetBundleObject>();
@@ -31,17 +30,10 @@ namespace FrameCore.Runtime
             _dependsDic.Clear();
             _dependsDic = new Dictionary<string, string[]>();
             var manifestFile = AssetBundleHelper.GetManifestPath();
-            if (!FileUtility.Exists(manifestFile))
-            {
-                Debug.LogError($"{manifestFile} is no exist!!!");
-                return;
-            }
-
-            // var ab = AssetBundle.LoadFromMemory(File.ReadAllBytes(manifestFile));
             var ab = AssetBundle.LoadFromFile(manifestFile);
             if (ab == null)
             {
-                Debug.LogError("LoadManifest ab NULL error !");
+                FrameDebugger.LogError($"LoadManifest ab NULL error ! manifestFile:{manifestFile}");
                 return;
             }
 
@@ -49,7 +41,7 @@ namespace FrameCore.Runtime
             var manifest = asset as AssetBundleManifest;
             if (manifest == null)
             {
-                Debug.LogError("LoadManifest ab NULL error !");
+                FrameDebugger.LogError("LoadManifest ab NULL error !");
                 return;
             }
 
@@ -142,13 +134,13 @@ namespace FrameCore.Runtime
             var abObj = GetAbObj(curName);
             if (abObj == null)
             {
-                Debug.LogError($"[ab Unload] Error : ab : {curName} is no exist!!!");
+                FrameDebugger.LogError($"[ab Unload] Error : ab : {curName} is no exist!!!");
                 return;
             }
 
             if (abObj.RefCount == 0)
             {
-                Debug.LogError($"[ab Unload] Error : ab : {curName} is RefCount == 0!!!");
+                FrameDebugger.LogError($"[ab Unload] Error : ab : {curName} is RefCount == 0!!!");
                 return;
             }
 
@@ -191,7 +183,7 @@ namespace FrameCore.Runtime
             // 这里用true，卸载Asset内存，实现指定卸载
             if (abObj.AssetBundle == null)
             {
-                Debug.LogError($"[Ab Unload] Error ! assetName : {abObj.Name}");
+                FrameDebugger.LogError($"[Ab Unload] Error ! assetName : {abObj.Name}");
                 return;
             }
 
@@ -203,16 +195,16 @@ namespace FrameCore.Runtime
         {
             if (_readyDic.ContainsKey(abName))
                 return _readyDic[abName];
-            
+
             if (_loadingDic.ContainsKey(abName))
                 return _loadingDic[abName];
-            
+
             if (_loadedDic.ContainsKey(abName))
                 return _loadedDic[abName];
-            
+
             if (_unloadDic.ContainsKey(abName))
                 return _unloadDic[abName];
-            
+
             return null;
         }
 
@@ -336,7 +328,7 @@ namespace FrameCore.Runtime
         {
             UpdateLoading();
             UpdateReady();
-             UpdateUnLoad();
+            UpdateUnLoad();
         }
     }
 }

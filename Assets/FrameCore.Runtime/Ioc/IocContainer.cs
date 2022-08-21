@@ -48,6 +48,7 @@ namespace FrameCore.Runtime
         private static readonly Dictionary<Type, TypeInfo> InfoDict = new Dictionary<Type, TypeInfo>();
 
         public static ContainerResolveHandle ContainerResolveHandle { get; set; }
+        public static ContainerResolveHandle ContainerRemoveHandle { get; set; }
 
         public static TypeInfo Bind(Type type)
         {
@@ -70,8 +71,14 @@ namespace FrameCore.Runtime
 
         public static void UnBind(Type type)
         {
-            if (InfoDict.ContainsKey(type))
-                InfoDict.Remove(type);
+            if (!InfoDict.ContainsKey(type))
+            {
+                FrameDebugger.LogError($"未绑定type : {type}");
+                return;
+            }
+            
+            ContainerRemoveHandle?.Invoke(InfoDict[type]);
+            InfoDict.Remove(type);
         }
 
         public static T Resolve<T>() where T : class
@@ -79,7 +86,7 @@ namespace FrameCore.Runtime
             var type = typeof(T);
             if (!InfoDict.ContainsKey(type))
             {
-                Debug.LogError($"未绑定type : {type}");
+                FrameDebugger.LogError($"未绑定type : {type}");
                 return default;
             }
 
@@ -97,7 +104,7 @@ namespace FrameCore.Runtime
         {
             if (!InfoDict.ContainsKey(type))
             {
-                Debug.LogError($"未绑定type : {type}");
+                FrameDebugger.LogError($"未绑定type : {type}");
                 return null;
             }
 

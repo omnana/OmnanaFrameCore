@@ -1,9 +1,10 @@
+using System.IO;
 using FrameCore.Runtime;
 using UnityEngine;
 
 namespace GameLogic
 {
-    public partial class Entrance
+    public partial class GameEntry
     {
         private static void Init()
         {
