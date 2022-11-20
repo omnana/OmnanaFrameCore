@@ -7,24 +7,30 @@ namespace FrameCore.Runtime
     public sealed class AssetBundleObject
     {
         public AssetBundleState State { get; set; } = AssetBundleState.None;
-        public string Name { get; private set; } // hash标识符
+        /// <summary> hash标识符 </summary>
+        public string Name { get; private set; }
 
-        public int RefCount { get; private set; } // 引用计数
+        /// <summary> 引用计数 </summary>
+        public int RefCount { get; private set; }
 
-        public AssetBundleCreateRequest Request { get; set; } // 异步加载请求
+        /// <summary> 异步加载请求 </summary>
+        public AssetBundleCreateRequest Request { get; set; }
 
-        public AssetBundle AssetBundle { get; set; }// 加载到的ab
+        /// <summary> 加载到的ab </summary>
+        public AssetBundle AssetBundle { get; set; }
 
-        public int DependLoadingCount; // 依赖计数
+        /// <summary> 依赖计数 </summary>
+        public int DependLoadingCount;
    
-        public List<AssetBundleObject> Depends; // 依赖项
+        /// <summary> 依赖项 </summary>
+        public List<string> Depends { get; private set; }
 
         private readonly List<AssetBundleLoadCallBack> _callFunList; //回调函数
 
         public AssetBundleObject(string name)
         {
             Name = name;
-            Depends = new List<AssetBundleObject>();
+            Depends = new List<string>();
             _callFunList = new List<AssetBundleLoadCallBack>();
         }
 
@@ -40,16 +46,6 @@ namespace FrameCore.Runtime
                 callBack(AssetBundle);
             }
             _callFunList.Clear();
-        }
-
-        // 遍历整个关系树
-        public void DoDependsRef()
-        {
-            RefCount++;
-            foreach (var dp in Depends)
-            {
-                dp.DoDependsRef();
-            }
         }
         
         public void AddRefCount()
@@ -68,11 +64,6 @@ namespace FrameCore.Runtime
             if (Request != null)
             {
                 AssetBundle = Request.assetBundle;
-            }
-
-            foreach (var dp in Depends)
-            {
-                dp.ForceSync();
             }
         }
     }
